@@ -8,7 +8,7 @@ package opdracht6test;
 import java.util.List;
 
 /**
- *
+ * test branch 
  * @author Frank
  */
 public class KlantDAOinterfaceImpl implements KlantInterface {
