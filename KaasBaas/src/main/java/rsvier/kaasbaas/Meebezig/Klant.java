@@ -17,7 +17,7 @@ public class Klant {
     
     //PRIVATE
     
-private int idKlant, telefoonnummer, Bezorghuisnummer, Factuurhuisnummer;
+private int idKlant, telefoonnummer, Bezorghuisnummer, Factuurhuisnummer, idMedewerker;
 private String Land, voornaam,tussenvoegsel, achternaam, BezorgPostcode,FactuurPostcode,BezorgHuisnummerToevoeging, FactuurHuisnummerToevoeging;
 
 
@@ -143,7 +143,13 @@ System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnum
         this.Land = land;
     }
     
-    
+    public int getMedewerkerID() {
+        return idMedewerker;
+    }
+
+    public void setMedewerkerID(int medewerkerint) {
+        this.idMedewerker = medewerkerint;
+    }
     
     
     
