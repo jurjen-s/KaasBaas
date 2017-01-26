@@ -13,9 +13,9 @@ import java.util.List;
  */
 public interface ProductDAO {
     
-    List<Product> zoekenProduct();
-    boolean toevoegenProduct(Product product);
-    boolean aanpassenProduct(Product product);
-    boolean verwijderenProduct(Product product);
+    void zoekenProduct();
+    void toevoegenProduct();
+    void aanpassenProduct();
+    void verwijderenProduct();
     
 }
