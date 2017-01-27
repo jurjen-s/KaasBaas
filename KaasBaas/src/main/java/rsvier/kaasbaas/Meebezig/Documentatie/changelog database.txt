@@ -1,0 +1,12 @@
+Database 1-0
+
+- tabel adressen
+	- kolom toegevoegd om aan te geven of adres een huisnr_toevoeging heeft
+		zodat we geen NULL ophalen bij adressen zonder toevoeging
+	- foreign key namen aangepast
+- tabel bestellingen
+	- kolom adressen_type verwijderd aangezien adressen al een type kolom heeft
+		je kunt daar selecteren op type, dus hier is geen kolom nodig
+	- foreign key namen aangepast
+- tabel klanten
+	- dezelfde wijzigingen als bij bestellingen
