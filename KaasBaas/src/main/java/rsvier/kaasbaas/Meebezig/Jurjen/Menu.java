@@ -14,6 +14,8 @@ public interface Menu {
 }
 
 /*
+Voor makkelijkere referentie
+
 Hoofdmenu -
 
 
