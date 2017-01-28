@@ -1,3 +1,8 @@
+Database 1-1
+
+- namen vna FK's waren niet uniek, dus heb ze nu uniek gemaakt. 
+	Aanmaken van database geeft geen errors meer bij mij.
+
 Database 1-0
 
 - tabel adressen
