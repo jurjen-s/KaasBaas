@@ -9,11 +9,24 @@ package rsvier.kaasbaas.Meebezig.Jurjen;
  *
  * @author jurjen
  */
-public interface Menu {
-    void showMenu();
+class Menu implements MenuCommander { // eerste opzet Command Pattern
+    private String actie;
+    private SubMenu<String> submenu; // receiver
+    
+    Menu(String actie, SubMenu<String> submenu) {
+        this.actie = actie;
+        this.submenu = submenu;
+    }
+    
+    @Override
+    public void eecute() {
+        this.submenu.accept(actie);
+    }
 }
 
 /*
+Voor makkelijkere referentie
+
 Hoofdmenu -
 
 
