@@ -19,11 +19,7 @@ import java.math.BigDecimal;
  * @@ staat voor commentaar dat geen code-functie beschrijft
  * @@adrestype voor bestellingen = 2;
  */
-public class BestellingSQL implements BestellingDAO {
-    
-    
-    // @@@@@ GEBLEVEN BIJ CASE 4 AANPASSEN
-    
+public class BestellingSQL implements BestellingDAO {    
     
     // velden die overeenkomen met velden in de database tabel Bestellingen
     private int bestellingID;
@@ -277,39 +273,26 @@ public class BestellingSQL implements BestellingDAO {
                     break; // einde case 3
             case 4: //
                     System.out.println("=========================");
-                    System.out.println("Doorzoek op voorraad");
+                    System.out.println("Doorzoek bestellingen op aantal artikelen");
                     System.out.println("-------------------------");
-                    System.out.println("Geef de voorraad op: ");
-                    int voorraad = TextIO.getlnInt();
+                    System.out.println("Geef het aantal artikelen op: ");
+                    aantalArtikelen = TextIO.getlnInt();
                     try {
                         PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                             "SELECT * " +
-                            " FROM producten " +
-                            " WHERE voorraad = ?");
-                        stmt.setInt(1, voorraad);
+                            "FROM bestellingen" +
+                            "WHERE aantal_artikelen = ?");
+                        stmt.setInt(1, aantalArtikelen);
                         ResultSet rs = stmt.executeQuery();
                         // Laat alle producten met de opgegeven voorraad zien
                         while (rs.next()) {
-                                Product gevondenProduct = new Product.ProductBuilder(rs.getInt(1))  //productID
-                                                                .omschrijving(rs.getString(2))  //omschrijving
-                                                                .soort(rs.getString(3))         //soort
-                                                                .prijs(rs.getBigDecimal(4))     //prijs
-                                                                .voorraad(rs.getInt(5))         //voorraad
-                                                                .build();
-                            zoekresultaat.add(gevondenProduct);
+                            System.out.println(rs.getInt("bestellingen_id") + "\t" + rs.getInt("FK_bestellingen_klanten_id") + 
+                                    "\t" + rs.getInt("FK_bestellingen_adressen_id") + "\t" + rs.getBigDecimal("totaalprijs"));
                         }
-                        stmt.close();
                     } catch (SQLException ex) {
-                            System.out.println("Het zoeken op voorraad ging mis.");
-                            ex.getMessage();
-                    }
-                    // Print de zoekresultaten
-                    if (zoekresultaat.isEmpty()) {
-                        System.out.println("Geen zoekresultaten.");
-                    }
-                    for (Product product : zoekresultaat) {
-                        System.out.println(product);
-                    }
+                        System.out.println("Het zoeken op aantal artikelen ging mis.");
+                        System.out.println(ex.getMessage());
+                    }                        
                     break; // einde case 4
             case 5:
                     //hoofdMenu.showMenu();
@@ -320,7 +303,6 @@ public class BestellingSQL implements BestellingDAO {
                     zoekenBestelling();
                     break;
             } // einde switch
-    zoekenBestelling();
     } // einde zoekenBestelling()
     
 
@@ -334,12 +316,11 @@ public class BestellingSQL implements BestellingDAO {
         System.out.println("-----------------------------------------");
         System.out.println("Wat is de naam van de bijbehorende klant?");
         System.out.println("Voornaam: ");
-        String voornaam = TextIO.getln();
+        voornaam = TextIO.getln();
         System.out.println("Achternaam: ");
-        String achternaam = TextIO.getln();
+        achternaam = TextIO.getln();
         System.out.println("-----------------------------------------.");
         // Zoek of klantID al bestaat in klanten tabel. Zo niet, prompt dan om toevoegen nieuwe klant.
-        int klantID;
         try {
             PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                "SELECT klanten_id" +
@@ -370,17 +351,17 @@ public class BestellingSQL implements BestellingDAO {
                 "WHERE adressen_type = 2");
             ResultSet rs = stmt.executeQuery();
             stmt.close();
-            String straatnaam = rs.getString("straatnaam");
-            int huisnummer = rs.getInt("huisnummer");
-            String huisnummer_toevoeging = "";
+            straatnaam = rs.getString("straatnaam");
+            huisnummer = rs.getInt("huisnummer");
+            huisnummerToevoeging = "";
             if (!rs.getString("huisnummer_toevoeging").equalsIgnoreCase("null")) {
-                huisnummer_toevoeging = rs.getString("huisnummer_toevoeging");
+                huisnummerToevoeging = rs.getString("huisnummer_toevoeging");
             }
-            String postcode = rs.getString("postcode");
-            String land = rs.getString("land");
+            postcode = rs.getString("postcode");
+            land = rs.getString("land");
             // Laat het bijbehorende adres van de klant zien. Vraag of het klopt of dat er wat aangepast moet worden.
             System.out.println("Het gevonden adres bij klant" + voornaam + " " + achternaam + " is "
-                    + straatnaam + " " + huisnummer + "-" + huisnummer_toevoeging +
+                    + straatnaam + " " + huisnummer + "-" + huisnummerToevoeging +
                      " " + postcode + "\t" + land);
             System.out.println("Kloppen deze gegevens?\n" +
                                 "Ja/Nee.");
@@ -405,88 +386,88 @@ public class BestellingSQL implements BestellingDAO {
         // vraag of haal op wat de totaalprijs is
         System.out.println("Dit zijn de gegevens van de bestelling.");
         // Print Klant (voornaam + achternaam) heeft bestelling (bestelling_id) met aantal_artikelen en totaalprijs
-    
+    } // einde toevoegenBestelling()
 
     @Override
-    public void aanpassenProduct() {// deze moet nog aangepast worden
+    public void aanpassenBestelling() { // deze moet nog aangepast worden
         System.out.println("==========================");
-        System.out.println("Pas producten aan.");
+        System.out.println("Pas bestellingen aan.");
         System.out.println("--------------------------");
-        // volgorde van kolommen: product_id, omschrijving, soort, prijs, voorraad
-        System.out.println("Wat is de soort van het aan te passen product?");
-        String aanpassenProduct = TextIO.getln();
-        System.out.println("Welke eigenschap (omschrijving, soort, prijs, voorraad) wilt u aanpassen?\n" +
-                                       "Omschrijving, soort, prijs of voorraad?");
-        String kolomnaam = TextIO.getln();
+        // volgorde van kolommen: bestellingen_id FK_bestellingen_klanten_id, FK_bestellingen_adressen_id aantal_artikelen, totaalprijs
+        System.out.println("Wat is het bestellingID van de aan te passen bestelling?");
+        bestellingID = TextIO.getInt();
+        System.out.println("Welke eigenschap wilt u aanpassen?\n" +
+                           "1: KlantID \n 2: AdresID \n 3: Aantal artikelen \n 4: Totaalprijs");
+        int keuze = TextIO.getInt();
+        String kolomnaam = "";
+        switch (keuze) {
+            case 1: kolomnaam = "FK_bestellingen_klanten_id";
+                    break;
+            case 2: kolomnaam = "FK_bestellingen_adressen_id";
+                    break;
+            case 3: kolomnaam = "aantal_artikelen";
+                    break;
+            case 4: kolomnaam = "totaalprijs";
+                    break;                
+        }
         // Haal huidige waarde van de genoemde eigenschap op
         String huidigeWaarde = "";
         try {
-            PreparedStatement stmt = productenconnectie.prepareStatement(
+            PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                 "SELECT ?" +
-                "FROM Producten" +
-                "WHERE soort = ?");
-            stmt.setString(1, kolomnaam.toLowerCase());
-            stmt.setString(2, aanpassenProduct);
+                "FROM bestellingen" +
+                "WHERE bestellingen_id = ?");
+            stmt.setString(1, kolomnaam);
+            stmt.setInt(2, bestellingID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 huidigeWaarde = rs.getString(kolomnaam);
             }
             stmt.close();
         } catch (SQLException ex) {
-            System.out.println("Er ging iets mis bij het zoeken naar het aan te passen product.");
+            System.out.println("Er ging iets mis bij het zoeken naar de aan te passen bestelling.");
             ex.getMessage();
         }
         // Vraag wat nieuwe waarde wordt
-        System.out.println("De huidige waarde van " + aanpassenProduct + " is " + huidigeWaarde + ".\n" +
-                                       "Wat wordt de nieuwe waarde?");
-        String nieuweWaarde = System.console().readLine();
+        System.out.println("De huidige waarde van " + bestellingID + " is " + huidigeWaarde + ".\n" +
+                           "Wat wordt de nieuwe waarde?");
+        String nieuweWaarde = TextIO.getln();
             try {
-                PreparedStatement stmt = productenconnectie.prepareStatement(
-                        "UPDATE Producten" +
+                PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+                        "UPDATE bestellingen" +
                         "SET ? = ?" +
-                        "WHERE soort = ?");
+                        "WHERE bestellingen_id = ?");
                         stmt.setString(1, kolomnaam);
                         stmt.setString(2, nieuweWaarde);
-                stmt.setString(3, aanpassenProduct);
+                stmt.setInt(3, bestellingID);
                 stmt.executeUpdate();
                 stmt.close();
             } catch (SQLException ex) {
                 System.out.println("Er ging iets mis bij het aanpassen van het product.");
                 ex.getMessage();
             }
-    aanpassenProduct();
     } // einde showAanpassenMenu
     
 
     @Override
-    public void verwijderenProduct() {// deze moet nog aangepast worden
+    public void verwijderenBestelling() {// deze moet nog aangepast worden
         System.out.println("==========================");
-        System.out.println("Verwijder producten.");
+        System.out.println("Verwijder bestellingen.");
         System.out.println("--------------------------");
-        System.out.println("Wat is de soort van het te verwijderen product?");
-        String verwijderProduct = TextIO.getln();
+        System.out.println("Wat is het bestellingID van de te verwijderen bestelling?");
+        bestellingID = TextIO.getInt();
         try {
-            PreparedStatement stmt = productenconnectie.prepareStatement(
-                "DELETE FROM Producten" +
-                "WHERE soort = ?");
-            stmt.setString(1, verwijderProduct);
+            PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+                "DELETE FROM bestellingen" +
+                "WHERE bestellingen_id = ?");
+            stmt.setInt(1, bestellingID);
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException ex) {
-            System.out.println("Er ging iets mis met het zoeken naar het te verwijderen product.");
+            System.out.println("Er ging iets mis met het zoeken naar de te verwijderen bestelling.");
             ex.getMessage();
-        }
-        System.out.print("Wilt u nog een product toevoegen? Ja/Nee\n" +
-                             "\"Nee\" keert terug naar het hoofdmenu.");
-        if (TextIO.getln().equalsIgnoreCase("ja")) {
-                verwijderenProduct();
-        } else if (TextIO.getln().equalsIgnoreCase("nee")) {
-                zoekenProduct();
-        } else {
-                System.out.println("Ongeldige invoer.");
-        }
-    verwijderenProduct();
-    } // einde showVerwijderenMenu
+        }        
+    } // einde vrwijderenBestelling()
     
     
-} // einde ProductSQL
+} // einde BestellingSQL
