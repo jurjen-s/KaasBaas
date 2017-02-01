@@ -11,7 +11,7 @@ import java.util.Scanner;
  *
  * @author Frank
  */
-public class menu extends StartProgram {
+public class menu  {
    
     
    
@@ -39,7 +39,7 @@ cijfer = input.nextInt();
 if (cijfer == 0){ System.out.println("Einde");}
 else if (cijfer <= 7 && cijfer >0){
     switch (cijfer){
-        case 1: System.out.println(" 1 Producten menu, het bestaat nog niet dus je komt terug"); cijfer = 0; hoofdmenu(); break;
+        case 1: System.out.println(" 1 Producten menu, het bestaat"); cijfer = 0; productmenu(); break;
         case 2: System.out.println(" 2 Klanten menu bestaat "); klantenmenu();   break;
         case 3: System.out.println(" 3 Adres gegevens menu bestaat nog niet dus je komt terug");   hoofdmenu(); break;
         case 4: System.out.println(" 4 Bestelling menu bestaat menu nog niet dus je komt terug ");  hoofdmenu(); break;
@@ -102,6 +102,66 @@ else{ System.out.println("verkeerde waarde");
 klantenmenu();
 
     }
+
+}
+
+
+public static void  productmenu(){
+   
+  
+System.out.println("Welkom in het productmenu ");
+System.out.println("Wat wilt u doen?");
+
+         System.out.println("=========================");
+         System.out.println("Doorzoek producten");
+         System.out.println("-------------------------");
+         System.out.println("1: Doorzoek op productID."); 
+         System.out.println("2: Doorzoek op soort.");
+         System.out.println("3: Doorzoek op prijs.");
+         System.out.println("4: Doorzoek op voorraad.");
+         System.out.println("0: Terug naar hoofdmenu.");
+         System.out.println("=========================");
+         System.out.println("Geef uw keuze : ");
+System.out.println("Vul het cijfer in wat u wilt doen");
+System.out.println("en druk dan op enter.");
+    
+        
+    Scanner inputklant = new Scanner(System.in); 
+    
+    int w = inputklant.nextInt();
+if (w == 0){ hoofdmenu();}
+else if(w <= 4 && w >0){
+    
+            switch (w){
+                
+                case 1: System.out.println(" 1 Doorzoek op productID"); productmenu(); break;
+                case 2: System.out.println(" 2 Doorzoek op soort"); productmenu();    break;
+                case 3: System.out.println(" 3 Doorzoek op prijs");  productmenu(); break;
+                case 4: System.out.println(" 4 Doorzoek op voorraad ");  productmenu(); break;
+                
+               
+      
+                             }
+                        }
+   
+                     
+else{ System.out.println("verkeerde cijfer waarde");
+klantenmenu();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 }
