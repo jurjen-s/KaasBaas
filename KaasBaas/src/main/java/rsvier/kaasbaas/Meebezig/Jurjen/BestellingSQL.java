@@ -9,9 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.math.BigDecimal;
 
 /**
  *
@@ -21,7 +21,7 @@ import java.math.BigDecimal;
  */
 public class BestellingSQL implements BestellingDAO {    
     
-    // velden die overeenkomen met velden in de database tabel Bestellingen
+    /* velden die overeenkomen met velden in de database tabel Bestellingen
     private int bestellingID;
     private int klantID;
     private int accountID;
@@ -37,7 +37,7 @@ public class BestellingSQL implements BestellingDAO {
     private String land;
     private int aantalArtikelen;
     private BigDecimal totaalPrijs;
-    
+    */
     
     private Connection bestellingenconnectie;
     
@@ -97,7 +97,7 @@ public class BestellingSQL implements BestellingDAO {
                     System.out.println("Doorzoek op bestellingID");
                     System.out.println("-------------------------");
                     System.out.println("Geef het bestellingID op: ");  
-                    bestellingID = TextIO.getlnInt(); // @@controleren input dmv error-handling
+                    int bestellingID = TextIO.getlnInt(); // @@controleren input dmv error-handling
                     try {
                         PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                             "SELECT * " +
@@ -105,9 +105,9 @@ public class BestellingSQL implements BestellingDAO {
                             " WHERE bestellingen_id = ?");
                         stmt.setInt(1, bestellingID);
                         ResultSet rs = stmt.executeQuery();
-                        klantID = rs.getInt("FK_bestellingen_klanten_id");
-                        aantalArtikelen = rs.getInt("aantal_artikelen");
-                        totaalPrijs = rs.getBigDecimal("totaalprijs");
+                        int klantID = rs.getInt("FK_bestellingen_klanten_id");
+                        int aantalArtikelen = rs.getInt("aantal_artikelen");
+                        BigDecimal totaalPrijs = rs.getBigDecimal("totaalprijs");
                         // Laat alle velden met het opgegeven bestellingID zien
                         while (rs.next()) {
                             System.out.println("Bestelling " + bestellingID +
@@ -127,7 +127,8 @@ public class BestellingSQL implements BestellingDAO {
                                 "(SELECT huisnummer_toevoeging FROM adressen WHERE heeft_huisnr_toevoeging = 1)" +
                             "postcode, land" +
                             "FROM adressen" +
-                            "WHERE adressen_id = 'klantID' AND adressen_type = '2'");
+                            "WHERE adressen_id = ? AND adressen_type = '2'");
+                        stmt.setInt(1, klantID);
                         ResultSet rs = stmt.executeQuery();
                         voornaam = rs.getString("voornaam");
                         tussenvoegsel = "";
@@ -468,6 +469,217 @@ public class BestellingSQL implements BestellingDAO {
             ex.getMessage();
         }        
     } // einde vrwijderenBestelling()
+
+/**
+* Zoekt in de tabel bestellingen naar het opgegeven bestellingID en laat de corresponderende data zien.
+* 
+* @param    zoekterm    Een integer die vergeleken moet worden met bestellingen_id in de bestellingen tabel
+* @return               Een bestelling object dat overeenkomt met de bestelling gevonden in de database
+*/    
+public Bestelling findBestellingById(int zoekterm) { // zoeken op bestellingID kan maar 1 match geven, dus void
+    int bestellingID = zoekterm;
+    // @@Controleren of bestellingID bestaat in de db
+    Bestelling zoekresultaat;
+    try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+        "SELECT * " +
+        "FROM bestellingen" +
+        "WHERE bestellingen_id = ?")) {
+        stmt.setInt(1, bestellingID);
+        ResultSet rs = stmt.executeQuery();
+        int klantID = rs.getInt("FK_bestellingen_klanten_id");
+        // @@Controleren of klantID bestaat in bestellingen aangezien het een FK is
+        int aantalArtikelen = rs.getInt("aantal_artikelen");
+        BigDecimal totaalPrijs = rs.getBigDecimal("totaalprijs");
+        // Er kan maar 1 resultaat zijn
+        while (rs.next()) {
+            zoekresultaat = new Bestelling.BestellingBuilder(bestellingID)
+                                                     .klantID(klantID)
+                                                     .adresID(adresID)
+                                                     .aantalArtikelen(aantalArtikelen)
+                                                     .totaalprijs(totaalPrijs)
+                                                     .build();
+        }
+        rs.close();
+    } catch (SQLException ex) {
+        System.out.println(ex);
+        System.out.println("Er ging iets mis bij het zoeken op bestellingID.");
+    }
+    return zoekresultaat;
+} // einde zoekBestelling(int bestellingID)
+
+public List findBestellingByKlant(int zoekterm) {
+    int klantID = zoekterm;
+    // @@Controleren of klantID bestaat in database
+    List<Bestelling> zoekresultaat = new ArrayList<>();
+    try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+        "SELECT * " +
+        "FROM bestellingen " +
+        "WHERE FK_bestellingen_klanten_id = ?")) {
+        stmt.setInt(1, klantID);
+        ResultSet rs = stmt.executeQuery();
+        int bestellingID = rs.getInt("bestellingen_id");
+        int adresID = rs.getInt("FK_bestellingen_adressen_id");
+        int aantalArtikelen = rs.getInt("aantal_artikelen");
+        BigDecimal totaalPrijs = rs.getBigDecimal("totaalprijs");
+        // Laat alle bestellingen met het opgegeven klantID zien
+        while (rs.next()) { //@@Poging om rijen neer te zetten
+        /*
+        int i = 1;
+        System.out.print(i + ":");
+        System.out.print("\tBestellingID: " + bestellingID);
+        System.out.print("\tAantal artikelen: " + aantalArtikelen);
+        System.out.print("\tTotaalprijs: " + totaalPrijs);
+        */
+        Bestelling gevondenBestelling = new Bestelling.BestellingBuilder(bestellingID)
+                                           .klantID(klantID)
+                                           .adresID(adresID)
+                                           .aantalArtikelen(aantalArtikelen)
+                                           .totaalprijs(totaalPrijs)
+                                           .build();
+        zoekresultaat.add(gevondenBestelling);
+        }
+        rs.close();
+    } catch (SQLException ex) {
+        System.out.println("Het zoeken van een bestelling op klantID ging mis.");
+        ex.getMessage();
+    }
+    /*
+    Om te printen:
+    for (Bestelling bestelling : zoekresultaat) {
+        System.out.println(bestelling);
+    }
+    */
+    return zoekresultaat;
+} // einde findBestellingByKlant
+
+public List findBestellingByAdres(Adres opgegevenAdres) {
     
-    
+    // @@ Krijg adresgegevens van view via controller (in de vorm van Adres object?)
+    /*
+    Dit moet naar de view
+
+    System.out.println("=========================");
+    System.out.println("Doorzoek op adres");
+    System.out.println("-------------------------");
+    System.out.println("Geef het adres op. " +
+                       "Laat het veld leeg wanneer niet van toepassing): ");
+    System.out.println("Straatnaam: ");
+    straatnaam = TextIO.getln();
+    System.out.println("Huisnummer: ");
+    huisnummer = TextIO.getInt();
+    System.out.println("Toevoeging huisnummer: ");
+    huisnummerToevoeging = TextIO.getln();
+    System.out.println("Postcode: ");
+    postcode = TextIO.getln();
+    //  @@Land lijkt me overbodig
+    System.out.println("Land: ");
+    land = TextIO.getln();
+
+    */
+    List<Bestelling> zoekresultaat = new ArrayList<>();
+    // @@ besef nu pas dat er overal join statements gebruikt kunnen worden waar gezocht wordt met FK's
+    // @@ Misschien handig om de user te vragen of hij wilt zoeken op straatnaam etc of op adresID
+    // @@ Misschien een mogelijkheid om de user te vragen of hij de tabel met adressen wil zien voor het invoeren van ID?
+    String straatnaam = opgegevenAdres.getStraatnaam();
+    int huisnummer = opgegevenAdres.getHuisnummer();
+    String huisnummerToevoeging = "";
+    if (opgegevenAdres.getHuisnummerToevoeging != null && !opgegevenAdres.getHuisnummerToevoeging.trim().equals("")) {
+        huisnummerToevoeging = opgegevenAdres.getHuisnummerToevoeging();
+    }
+    String postcode = opgegevenAdres.getPostcode();
+    int adresID;
+                    // Misschien moet dit naar aparte functie? findBestellingByAdresID en findBestellingByAdres?
+                    try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+                        "SELECT adressen_id " +
+                        "FROM adressen " +
+                        "WHERE straatnaam = ? AND huisnummer = ? AND huisnummer_toevoeging = ? AND postcode = ?")) {
+                        stmt.setString(1, straatnaam);
+                        stmt.setInt(2, huisnummer);
+                        if (huisnummerToevoeging != null && huisnummerToevoeging.trim().equals("")) {
+                            stmt.setString(3, huisnummerToevoeging);
+                        }
+                        stmt.setString(4, postcode);
+                        ResultSet rs = stmt.executeQuery();
+                        // Laat alle producten met de opgegeven prijs zien
+                        while (rs.next()) {
+                            adresID = rs.getInt("adressen_id");
+                        }
+                    rs.close();
+                    } catch (SQLException ex) {
+                        System.out.println(ex);
+                        System.out.println("Het opgegeven adres is niet gevonden.");
+                    }
+
+
+    // Hier ga je er van uit dat er een geldig klantID teruggekomen is
+    // Met dat klantID op zoek naar corresponderende bestellingen
+    try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+            "SELECT * " +
+            "FROM bestellingen" +
+            "WHERE FK_bestellingen_adressen_id = ?")) {
+        stmt.setInt(1, adresID);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+        Bestelling gevondenBestelling = new Bestelling.BestellingBuilder(rs.getInt("bestellingen_id"))
+                                                      .klantID(rs.getInt("FK_bestellingen_klanten_id"))
+                                                      .adresID(rs.getInt("FK_bestellingen_adressen_id"))
+                                                      .aantalArtikelen(rs.getInt("aantal_artikelen"))
+                                                      .totaalprijs(rs.getBigDecimal("totaalprijs"))
+                                                      .build();
+        zoekresultaat.add(gevondenBestelling);
+        }
+        rs.close();
+        /*
+        // Vervangen methode, aangezien er meerdere bestellingen per adres gevonden kunnen worden
+        bestellingID = rs.getInt("bestellingen_id");
+        klantID = rs.getInt("FK_bestellingen_klanten_id");
+        adresID = rs.getInt("FK_bestellingen_adressen_id");
+        aantalArtikelen = rs.getInt("aantal_artikelen");
+        totaalPrijs = rs.getBigDecimal("totaalprijs");
+        // Print de zoekresultaten
+        System.out.println("De volgende bestellingen zijn gevonden voor het opgegeven adres: ");
+        while (rs.next()) {
+            System.out.println("BestellingID:\t" + bestellingID + "\tKlantID:\t" + klantID + 
+                               "\tAdresID:\t" + adresID + "\tAantal artikelen:\t" + aantalArtikelen +
+                               "\tTotaalprijs:\t" + totaalPrijs + ".");
+        } */
+    } catch (SQLException ex) {
+        System.out.println(ex.getMessage());
+        System.out.println("Er ging iets mis bij het zoeken van een bestelling.");
+    }
+    return zoekresultaat;
+} // einde zoekBestellingByAdres()
+
+public List findBestellingByAantalArtikelen(int aantal) {
+    int aantalArtikelen = aantal;
+    List<Bestelling> zoekresultaat = new ArrayList<>();
+    try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+            "SELECT * " +
+            "FROM bestellingen" +
+            "WHERE aantal_artikelen = ?")) {
+        stmt.setInt(1, aantalArtikelen);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Bestelling gevondenBestelling = new Bestelling.BestellingBuilder(rs.getInt("bestellingen_id"))
+                                                          .klantID(rs.getInt("FK_bestellingen_klanten_id"))
+                                                          .adresID(rs.getInt("FK_bestellingen_adressen_id"))
+                                                          .aantalArtikelen(rs.getInt("aantal_artikelen"))
+                                                          .totaalprijs(rs.getBigDecimal("totaalprijs"))
+                                                          .build();
+            zoekresultaat.add(gevondenBestelling);
+        }
+        rs.close();
+        /*
+        while (rs.next()) {
+            System.out.println(rs.getInt("bestellingen_id") + "\t" + rs.getInt("FK_bestellingen_klanten_id") + 
+                    "\t" + rs.getInt("FK_bestellingen_adressen_id") + "\t" + rs.getBigDecimal("totaalprijs"));
+        }
+        */
+    } catch (SQLException ex) {
+        System.out.println(ex.getMessage());
+        System.out.println("Het zoeken op aantal artikelen ging mis.");        
+    }                        
+    return zoekresultaat;
+} // einde findBestellingByAantalArtikelen()
+
 } // einde BestellingSQL
