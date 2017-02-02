@@ -68,6 +68,10 @@ public class Product {
         return product;
     }
     
+    public Product() {
+        
+    }
+    
     public static class ProductBuilder {
         private int productId;
         private String omschrijving;
