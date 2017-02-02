@@ -19,347 +19,238 @@ import java.math.BigDecimal;
  */
 public class ProductSQL implements ProductDAO {
     
+    public void snelkoppelingNaarFuncties() { // deze functie negeren, is puur om makkelijker te navigeren in IDE
+        
+    }
+    // Functies:
+    // 1: Om producten te zoeken:
+    //      1.1: findProductByID(int productId); - returns Product object als zoekresultaat
+    //      1.2: findProductBySoort(String soort); - returns List<Product> met zoekresultaten
+    //      1.3: findProductByPrijs(BigDecimal Prijs); - returns List<Product> met zoekresultaten
+    //      1.4: findProductByVoorraad(int voorraad); - returns List<Product> met zoekresultaten
+    // 2: Om producten toe te voegen:
+    //      // De functie bij 2.1 heeft een in de view aangemaakt Product Object nodig
+    //      2.1: toevoegenProduct(Product product) - returns succes of mislukt (of return: vernieuwd product?)
+    // 3: Om producten aan te passen:
+    //      // De functies hieronder hebben een productId (of Product Object? nog niet geimplementeerd) nodig
+    //      3.1: updateProductOmschrijving(int productId, String omschrijving); - returns succes of mislukt (of return: vernieuwd product?)
+    //      3.2: updateProductSoort(int productId, String soort); - returns succes of mislukt (of return: vernieuwd product?)
+    //      3.3: updateProductPrijs(int productId, BigDecimal prijs); - returns succes of mislukt (of return: vernieuwd product?)
+    //      3.4: updateProductVoorraad(int productId, int voorraad); - returns succes of mislukt (of return: vernieuwd product?)
+    // 4: Om producten te verwijderen:
+    //      // De functie hieronder heeft een productId (of Product Object? nog niet geimplementeerd) nodig
+    //      4.1: verwijderenProduct(int productId); - returns succes of mislukt (of return: vernieuwd product?)
+    
     private Connection productenconnectie;
     
     public ProductSQL(Connection connectie) {
         this.productenconnectie = connectie;
-        System.out.println("========================");
-        System.out.println("Wat wilt u doen?");
-        System.out.println("------------------------");
-        System.out.println("1: Producten doorzoeken.");
-        System.out.println("2: Producten toevoegen.");
-        System.out.println("3: Producten aanpassen.");
-        System.out.println("4: Producten verwijderen.");
-        System.out.println("5: Terug naar hoofdmenu.");
-        System.out.println("------------------------");
-        System.out.println("Geef uw keuze (1-5): ");
-        System.out.println("========================");
-        int keuze = TextIO.getlnInt();
-        switch (keuze) {
-            case 1:     zoekenProduct();
-                        break;
-            case 2:     toevoegenProduct();
-                        break;
-            case 3:     aanpassenProduct();
-                        break;
-            case 4:     verwijderenProduct();
-            
-            case 5:     // hoofdMenu.showMenu();
-            
-            default:    System.out.println("Ongeldige invoer.");
-                        new ProductSQL(productenconnectie);
-        }
-        
     }
     
-    @Override
-    public void zoekenProduct() {
-        // Laat keuze-menu zien
-        // Registreer keuze en geef verzoek door aan database
-        // Laat zoekresultaat zien
+    public List findProductByID(int productId) {
         List<Product> zoekresultaat = new ArrayList<>();
-        System.out.println("============================");
-        System.out.println("Hoe wilt u producten zoeken?");
-        System.out.println("----------------------------");
-        System.out.println("| 1: Doorzoek op productID.|"); 
-        System.out.println("| 2: Doorzoek op soort.    |");
-        System.out.println("| 3: Doorzoek op prijs.    |");
-        System.out.println("| 4: Doorzoek op voorraad. |");
-        System.out.println("| 5: Terug naar hoofdmenu. |");
-        System.out.println("----------------------------");
-        System.out.println("|   Geef uw keuze (1-5):   |");
-        System.out.println("============================");
-        int keuze = TextIO.getlnInt();
-        // Laat volgende menu zien afhankelijk van keuze
-        switch (keuze) {
-            case 1:
-                    System.out.println("=========================");
-                    System.out.println("Doorzoek op productID");
-                    System.out.println("-------------------------");
-                    System.out.println("Geef het productID op: ");  
-                    int productID = TextIO.getlnInt(); // controleren input dmv error-handling
-                    try {
-                        PreparedStatement stmt = productenconnectie.prepareStatement(
-                            "SELECT * " +
-                            " FROM producten " +
-                            " WHERE producten_id = ?");
-                        stmt.setInt(1, productID);
-                        ResultSet rs = stmt.executeQuery();
-                        // Laat alle producten met het opgegeven productID zien
-                        while (rs.next()) {
-                            Product gevondenProduct = new Product.ProductBuilder(rs.getInt(1))  //productID
-                                                                .omschrijving(rs.getString(2))  //omschrijving
-                                                                .soort(rs.getString(3))         //soort
-                                                                .prijs(rs.getBigDecimal(4))     //prijs
-                                                                .voorraad(rs.getInt(5))         //voorraad
-                                                                .build();
-                            zoekresultaat.add(gevondenProduct);
-                        }
-                        // productenconnectie.close();      // wel of niet nodig?
-                        stmt.close();
-                    } catch (SQLException ex) {
-                            System.out.println("Het zoeken op productID ging mis.");
-                            ex.getMessage();
-                    }
-                    // Print de zoekresultaten
-                    if (zoekresultaat.isEmpty()) {
-                        System.out.println("Geen zoekresultaten.");
-                    }
-                    for (Product product : zoekresultaat) {
-                        System.out.println(product);
-                    }
-                    break; // einde case 1
-            case 2:
-                    System.out.println("=========================");
-                    System.out.println("Doorzoek op soort");
-                    System.out.println("-------------------------");
-                    System.out.println("Geef het soort op: ");
-                    String soort = TextIO.getln();
-                    try {
-                        PreparedStatement stmt = productenconnectie.prepareStatement(
-                            "SELECT * " +
-                            " FROM producten " +
-                            " WHERE soort = ?");
-                        stmt.setString(1, soort);
-                        ResultSet rs = stmt.executeQuery();
-                        // Laat alle producten met de opgegeven soort zien
-                        while (rs.next()) {
-                            Product gevondenProduct = new Product.ProductBuilder(rs.getInt(1))  //productID
-                                                                .omschrijving(rs.getString(2))  //omschrijving
-                                                                .soort(rs.getString(3))         //soort
-                                                                .prijs(rs.getBigDecimal(4))     //prijs
-                                                                .voorraad(rs.getInt(5))         //voorraad
-                                                                .build();
-                            zoekresultaat.add(gevondenProduct);
-                        }
-                        stmt.close();
-                    } catch (SQLException ex) {
-                            System.out.println("Het zoeken op soort ging mis.");
-                            ex.getMessage();
-                    }
-                        /*System.out.println("Wilt u nog een productsoort zoeken? (Ja/Nee)");
-                        String antwoord = TextIO.getln();
-                        if (antwoord.equalsIgnoreCase("nee")) {
-                            break;
-                        }*/
-                    // Print de zoekresultaten
-                    if (zoekresultaat.isEmpty()) {
-                        System.out.println("Geen zoekresultaten.");
-                    }
-                    for (Product product : zoekresultaat) {
-                        System.out.println(product);
-                    }
-                    break; // einde case 2
-            case 3:
-                    System.out.println("=========================");
-                    System.out.println("Doorzoek op prijs");
-                    System.out.println("-------------------------");
-                    System.out.println("Geef de prijs op: ");
-                    String opgegevenPrijs = TextIO.getln();
-                    BigDecimal prijs = new BigDecimal(opgegevenPrijs);
-                    try {
-                        PreparedStatement stmt = productenconnectie.prepareStatement(
-                            "SELECT * " +
-                            " FROM producten " +
-                            " WHERE prijs = ?");
-                        stmt.setBigDecimal(1, prijs);
-                        ResultSet rs = stmt.executeQuery();
-                        // Laat alle producten met de opgegeven prijs zien
-                        while (rs.next()) {
-                                Product gevondenProduct = new Product.ProductBuilder(rs.getInt(1))  //productID
-                                                                .omschrijving(rs.getString(2))  //omschrijving
-                                                                .soort(rs.getString(3))         //soort
-                                                                .prijs(rs.getBigDecimal(4))     //prijs
-                                                                .voorraad(rs.getInt(5))         //voorraad
-                                                                .build();
-                            zoekresultaat.add(gevondenProduct);
-                        }
-                        stmt.close();
-                    } catch (SQLException ex) {
-                            System.out.println("Het zoeken op prijs ging mis.");
-                            ex.getMessage();
-                    }
-                    // Print de zoekresultaten
-                    if (zoekresultaat.isEmpty()) {
-                        System.out.println("Geen zoekresultaten.");
-                    }
-                    for (Product product : zoekresultaat) {
-                        System.out.println(product);
-                    }
-                    break; // einde case 3
-            case 4:
-                    System.out.println("=========================");
-                    System.out.println("Doorzoek op voorraad");
-                    System.out.println("-------------------------");
-                    System.out.println("Geef de voorraad op: ");
-                    int voorraad = TextIO.getlnInt();
-                    try {
-                        PreparedStatement stmt = productenconnectie.prepareStatement(
-                            "SELECT * " +
-                            " FROM producten " +
-                            " WHERE voorraad = ?");
-                        stmt.setInt(1, voorraad);
-                        ResultSet rs = stmt.executeQuery();
-                        // Laat alle producten met de opgegeven voorraad zien
-                        while (rs.next()) {
-                                Product gevondenProduct = new Product.ProductBuilder(rs.getInt(1))  //productID
-                                                                .omschrijving(rs.getString(2))  //omschrijving
-                                                                .soort(rs.getString(3))         //soort
-                                                                .prijs(rs.getBigDecimal(4))     //prijs
-                                                                .voorraad(rs.getInt(5))         //voorraad
-                                                                .build();
-                            zoekresultaat.add(gevondenProduct);
-                        }
-                        stmt.close();
-                    } catch (SQLException ex) {
-                            System.out.println("Het zoeken op voorraad ging mis.");
-                            ex.getMessage();
-                    }
-                    // Print de zoekresultaten
-                    if (zoekresultaat.isEmpty()) {
-                        System.out.println("Geen zoekresultaten.");
-                    }
-                    for (Product product : zoekresultaat) {
-                        System.out.println(product);
-                    }
-                    break; // einde case 4
-            case 5:
-                    //hoofdMenu.showMenu();
-                    System.out.println("Hier komt een verwijzing naar het hoofdmenu.");
-                    break;
-            default:
-                    System.out.println("Ongeldige invoer.");
-                    zoekenProduct();
-                    break;
-            } // einde switch
-    zoekenProduct();
-    } // einde zoekenProduct()
-    
-
-    @Override
-    public void toevoegenProduct() {
-        System.out.println("==========================");
-        System.out.println("Voeg nieuwe producten toe.");
-        System.out.println("--------------------------");
-        System.out.println("Wat is de omschrijving?");
-        String omschrijving = TextIO.getln();
-        System.out.println("Wat is de soort?");
-        String soort = TextIO.getln();
-        System.out.println("Wat is de prijs?");
-        BigDecimal prijs = new BigDecimal(TextIO.getln());
-        System.out.println("Wat is de voorraad?");
-        int voorraad = TextIO.getInt();
-        //int productID = TextIO.getInt(); //overbodig, want product_id is auto-increment        
-        // Voeg de gegevens toe aan de tabel Producten
-        try {
-            PreparedStatement stmt = productenconnectie.prepareStatement(
-                "INSERT into producten (omschrijving, soort, prijs, voorraad) "+
-                "VALUES (?, ?, ?, ?)");
-            stmt.setString(1, omschrijving);
-            stmt.setString(2, soort);
-            stmt.setBigDecimal(3, prijs);
-            stmt.setInt(4, voorraad);
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (NullPointerException | SQLException ex) {
-            System.out.println("Er ging iets mis bij het toevoegen van het product.");
-            ex.getMessage();
-        }
-        System.out.println("Product succesvol toegevoegd.");
-        System.out.println("Wilt u nog een product toevoegen? Ja/Nee\n" +
-                         "\"Nee\" keert terug naar het vorige menu.");
-        String antwoord = TextIO.getln();
-        if (antwoord.equalsIgnoreCase("ja")) {
-            toevoegenProduct();
-        } else if (antwoord.equalsIgnoreCase("nee")) {
-            zoekenProduct();
-        } else {
-            System.out.println("Ongeldige invoer.");
-        }        
-    toevoegenProduct();
-    } // einde toevoegenProduct
-    
-
-    @Override
-    public void aanpassenProduct() {
-        System.out.println("==========================");
-        System.out.println("Pas producten aan.");
-        System.out.println("--------------------------");
-        // volgorde van kolommen: product_id, omschrijving, soort, prijs, voorraad
-        System.out.println("Wat is de soort van het aan te passen product?");
-        String aanpassenProduct = TextIO.getln();
-        System.out.println("Welke eigenschap (omschrijving, soort, prijs, voorraad) wilt u aanpassen?\n" +
-                                       "Omschrijving, soort, prijs of voorraad?");
-        String kolomnaam = TextIO.getln();
-        // Haal huidige waarde van de genoemde eigenschap op
-        String huidigeWaarde = "";
-        try {
-            PreparedStatement stmt = productenconnectie.prepareStatement(
-                "SELECT ?" +
-                "FROM Producten" +
-                "WHERE soort = ?");
-            stmt.setString(1, kolomnaam.toLowerCase());
-            stmt.setString(2, aanpassenProduct);
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "SELECT * " +
+                "FROM producten " +
+                "WHERE producten_id = ?")) {
+            stmt.setInt(1, productId);
             ResultSet rs = stmt.executeQuery();
+            // Laat alle producten met het opgegeven productId zien
             while (rs.next()) {
-                huidigeWaarde = rs.getString(kolomnaam);
+                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                                                    .omschrijving(rs.getString("omschrijving"))
+                                                    .soort(rs.getString("soort"))
+                                                    .prijs(rs.getBigDecimal("prijs"))
+                                                    .voorraad(rs.getInt("voorraad"))
+                                                    .build();
+                zoekresultaat.add(gevondenProduct);
             }
-            stmt.close();
+            rs.close();
         } catch (SQLException ex) {
-            System.out.println("Er ging iets mis bij het zoeken naar het aan te passen product.");
-            ex.getMessage();
+            System.out.print(ex.getMessage());
+            System.out.println("Het zoeken op productId ging mis.");
         }
-        // Vraag wat nieuwe waarde wordt
-        System.out.println("De huidige waarde van " + aanpassenProduct + " is " + huidigeWaarde + ".\n" +
-                                       "Wat wordt de nieuwe waarde?");
-        String nieuweWaarde = System.console().readLine();
-            try {
-                PreparedStatement stmt = productenconnectie.prepareStatement(
-                        "UPDATE Producten" +
-                        "SET ? = ?" +
-                        "WHERE soort = ?");
-                        stmt.setString(1, kolomnaam);
-                        stmt.setString(2, nieuweWaarde);
-                stmt.setString(3, aanpassenProduct);
-                stmt.executeUpdate();
-                stmt.close();
-            } catch (SQLException ex) {
-                System.out.println("Er ging iets mis bij het aanpassen van het product.");
-                ex.getMessage();
-            }
-    aanpassenProduct();
-    } // einde showAanpassenMenu
+        if (zoekresultaat.isEmpty()) {
+            System.out.println("Geen zoekresultaten.");
+        } 
+        return zoekresultaat;
+    } // einde findProductByID(int productId)
     
+    public List findProductBySoort(String soort) {
+        List<Product> zoekresultaat = new ArrayList<>();
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "SELECT * " +
+                " FROM producten " +
+                " WHERE soort = ?")) {
+            stmt.setString(1, soort);
+            ResultSet rs = stmt.executeQuery();
+            // Laat alle producten met de opgegeven soort zien
+            while (rs.next()) {
+                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                                                    .omschrijving(rs.getString("omschrijving"))
+                                                    .soort(rs.getString("soort"))
+                                                    .prijs(rs.getBigDecimal("prijs"))
+                                                    .voorraad(rs.getInt("voorraad"))
+                                                    .build();
+                zoekresultaat.add(gevondenProduct);
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+            System.out.println("Het zoeken op soort ging mis.");
+        }
+        if (zoekresultaat.isEmpty()) {
+            System.out.println("Geen zoekresultaten.");
+        } 
+        return zoekresultaat;
+    } // einde findProductBySoort(String soort)
+    
+    public List findProductByPrijs(BigDecimal prijs) {
+        List<Product> zoekresultaat = new ArrayList<>();
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "SELECT * " +
+                "FROM producten " +
+                "WHERE prijs = ?")) {
+            stmt.setBigDecimal(1, prijs);
+            ResultSet rs = stmt.executeQuery();
+            // Laat alle producten met de opgegeven prijs zien
+            while (rs.next()) {
+                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                                                    .omschrijving(rs.getString("omschrijving"))
+                                                    .soort(rs.getString("soort"))
+                                                    .prijs(rs.getBigDecimal("prijs"))
+                                                    .voorraad(rs.getInt("voorraad"))
+                                                    .build();
+                zoekresultaat.add(gevondenProduct);
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+            System.out.println("Het zoeken op prijs ging mis.");
+        }
+        if (zoekresultaat.isEmpty()) {
+            System.out.println("Geen zoekresultaten.");
+        } 
+        return zoekresultaat;
+    } // einde findProductByPrijs(BigDecimal Prijs)
+    
+    public List findProductByVoorraad(int voorraad) {
+        List<Product> zoekresultaat = new ArrayList<>();
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "SELECT * " +
+                "FROM producten " +
+                "WHERE voorraad = ?")) {
+            stmt.setInt(1, voorraad);
+            ResultSet rs = stmt.executeQuery();
+            // Laat alle producten met de opgegeven voorraad zien
+            while (rs.next()) {
+                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                                                    .omschrijving(rs.getString("omschrijving"))
+                                                    .soort(rs.getString("soort"))
+                                                    .prijs(rs.getBigDecimal("prijs"))
+                                                    .voorraad(rs.getInt("voorraad"))
+                                                    .build();
+                zoekresultaat.add(gevondenProduct);
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+            System.out.println("Het zoeken op voorraad ging mis.");
+        }
+        if (zoekresultaat.isEmpty()) {
+            System.out.println("Geen zoekresultaten.");
+        } 
+        return zoekresultaat;
+    } // einde findProductByVoorraad(int voorraad)
+    
+    public boolean toevoegenProduct(Product product) {
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "INSERT into producten (omschrijving, soort, prijs, voorraad) "+
+                "VALUES (?, ?, ?, ?)")) {
+            stmt.setString(1, product.getOmschrijving());
+            stmt.setString(2, product.getSoort());
+            stmt.setBigDecimal(3, product.getPrijs());
+            stmt.setInt(4, product.getVoorraad());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets mis bij het toevoegen van het product.");
+            return false;
+        }
+        return true;
+    } // einde toevoegenProduct(Product product)
 
-    @Override
-    public void verwijderenProduct() {
-        System.out.println("==========================");
-        System.out.println("Verwijder producten.");
-        System.out.println("--------------------------");
-        System.out.println("Wat is de soort van het te verwijderen product?");
-        String verwijderProduct = TextIO.getln();
-        try {
-            PreparedStatement stmt = productenconnectie.prepareStatement(
-                "DELETE FROM Producten" +
-                "WHERE soort = ?");
-            stmt.setString(1, verwijderProduct);
+    public boolean updateProductOmschrijving(int productId, String omschrijving) {
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "UPDATE producten" +
+                "SET omschrijving = ?" +
+                "WHERE producten_id = productId")) {
+            stmt.setString(1, omschrijving);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets fout met het updaten van de productomschrijving.");
+            return false;
+        }
+        return true;
+    } // einde updateProductOmschrijving(int productId, String omschrijving)
+
+    public boolean updateProductSoort(int productId, String soort) {
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "UPDATE producten" +
+                "SET soort = ?" +
+                "WHERE producten_id = productId")) {
+            stmt.setString(1, soort);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets fout met het updaten van de productsoort.");
+            return false;
+        }
+        return true;
+    } // einde updateProductSoort(int productId, String soort)
+    public boolean updateProductPrijs(int productId, BigDecimal prijs)  {
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "UPDATE producten" +
+                "SET prijs = ?" +
+                "WHERE producten_id = productId")) {
+            stmt.setBigDecimal(1, prijs);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets fout met het updaten van de productprijs.");
+            return false;
+        }
+        return true;
+    } // einde updateProductPrijs(int productId, BigDecimal prijs)
+    public boolean updateProductVoorraad(int productId, int voorraad) {
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "UPDATE producten" +
+                "SET voorraad = ?" +
+                "WHERE producten_id = productId")) {
+            stmt.setInt(1, voorraad);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets fout met het updaten van de productvoorraad.");
+            return false;
+        }
+        return true;
+    } // einde updateProductVoorraad(int productId, int voorraad)
+
+    public boolean verwijderenProduct(int productId) {
+        try (PreparedStatement stmt = productenconnectie.prepareStatement(
+                "DELETE FROM producten" +
+                "WHERE productId = ?")) {
+            stmt.setInt(1, productId);
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException ex) {
-            System.out.println("Er ging iets mis met het zoeken naar het te verwijderen product.");
-            ex.getMessage();
-        }
-        System.out.print("Wilt u nog een product toevoegen? Ja/Nee\n" +
-                             "\"Nee\" keert terug naar het hoofdmenu.");
-        if (TextIO.getln().equalsIgnoreCase("ja")) {
-                verwijderenProduct();
-        } else if (TextIO.getln().equalsIgnoreCase("nee")) {
-                zoekenProduct();
-        } else {
-                System.out.println("Ongeldige invoer.");
-        }
-    verwijderenProduct();
-    } // einde showVerwijderenMenu
-    
-    
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets mis met verwijderen van het product.");
+            return false;
+        }        
+    return true;
+    } // einde verwijderenProduct(int productId)
+
 } // einde ProductSQL

@@ -20,15 +20,47 @@ public class Product {
     // laat resultaten zien in Producten   
     
     
-    private int product_id;
+    private int productId;
     private String omschrijving;
     private String soort;
     private BigDecimal prijs;
     private int voorraad;
     
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+    public void setOmschrijving(String omschrijving) {
+        this.omschrijving = omschrijving;
+    }
+    public void setSoort(String soort) {
+        this.soort = soort;
+    }
+    public void setPrijs(BigDecimal prijs) {
+        this.prijs = prijs;
+    }
+    public void setVoorraad(int voorraad) {
+        this.voorraad = voorraad;
+    }
+    
+    public int getProductId() {
+        return productId;
+    }
+    public String getOmschrijving() {
+        return omschrijving;
+    }
+    public String getSoort() {
+        return soort;
+    }
+    public BigDecimal getPrijs() {
+        return prijs;
+    }
+    public int getVoorraad() {
+        return voorraad;
+    }
+    
     @Override
     public String toString() {
-        String product =  product_id + "\t\t"
+        String product =  productId + "\t\t"
                         + omschrijving + "\t\t"
                         + soort + "\t\t"
                         + prijs + "\t\t"
@@ -37,14 +69,14 @@ public class Product {
     }
     
     public static class ProductBuilder {
-        private int product_id;
+        private int productId;
         private String omschrijving;
         private String soort;
         private BigDecimal prijs;
         private int voorraad;
         
-        public ProductBuilder(int product_id) {
-            this.product_id = product_id;
+        public ProductBuilder(int productId) {
+            this.productId = productId;
         }
         public ProductBuilder omschrijving(String omschrijving) {
             this.omschrijving = omschrijving;
@@ -68,7 +100,7 @@ public class Product {
     }
 
         private Product(ProductBuilder builder) {
-            product_id = builder.product_id;
+            productId = builder.productId;
             omschrijving = builder.omschrijving;
             soort = builder.soort;            
             prijs = builder.prijs;
