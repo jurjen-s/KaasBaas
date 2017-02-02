@@ -54,7 +54,8 @@ public class ProductSQL implements ProductDAO {
             ResultSet rs = stmt.executeQuery();
             // Laat alle producten met het opgegeven productId zien
             while (rs.next()) {
-                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                Product gevondenProduct = new Product.ProductBuilder()
+                                                    .productId(rs.getInt("producten_id"))
                                                     .omschrijving(rs.getString("omschrijving"))
                                                     .soort(rs.getString("soort"))
                                                     .prijs(rs.getBigDecimal("prijs"))
@@ -79,7 +80,8 @@ public class ProductSQL implements ProductDAO {
             ResultSet rs = stmt.executeQuery();
             // Laat alle producten met de opgegeven soort zien
             while (rs.next()) {
-                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                Product gevondenProduct = new Product.ProductBuilder()
+                                                    .productId(rs.getInt("producten_id"))
                                                     .omschrijving(rs.getString("omschrijving"))
                                                     .soort(rs.getString("soort"))
                                                     .prijs(rs.getBigDecimal("prijs"))
@@ -108,7 +110,8 @@ public class ProductSQL implements ProductDAO {
             ResultSet rs = stmt.executeQuery();
             // Laat alle producten met de opgegeven prijs zien
             while (rs.next()) {
-                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                Product gevondenProduct = new Product.ProductBuilder()
+                                                    .productId(rs.getInt("producten_id"))
                                                     .omschrijving(rs.getString("omschrijving"))
                                                     .soort(rs.getString("soort"))
                                                     .prijs(rs.getBigDecimal("prijs"))
@@ -137,7 +140,8 @@ public class ProductSQL implements ProductDAO {
             ResultSet rs = stmt.executeQuery();
             // Laat alle producten met de opgegeven voorraad zien
             while (rs.next()) {
-                Product gevondenProduct = new Product.ProductBuilder(rs.getInt("producten_id"))
+                Product gevondenProduct = new Product.ProductBuilder()
+                                                    .productId(rs.getInt("producten_id"))
                                                     .omschrijving(rs.getString("omschrijving"))
                                                     .soort(rs.getString("soort"))
                                                     .prijs(rs.getBigDecimal("prijs"))

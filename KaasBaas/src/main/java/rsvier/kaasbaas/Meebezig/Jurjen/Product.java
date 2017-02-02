@@ -79,9 +79,15 @@ public class Product {
         private BigDecimal prijs;
         private int voorraad;
         
-        public ProductBuilder(int productId) {
-            this.productId = productId;
+        public ProductBuilder() {
+            
         }
+        
+        public ProductBuilder productId(int productId) {
+            this.productId = productId;
+            return this;
+        }
+        
         public ProductBuilder omschrijving(String omschrijving) {
             this.omschrijving = omschrijving;
             return this;
