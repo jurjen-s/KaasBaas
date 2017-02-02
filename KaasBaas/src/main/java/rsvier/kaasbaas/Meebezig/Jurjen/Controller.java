@@ -51,7 +51,8 @@ public class Controller {
     
     public void findProductByID(int productId) {
         if (existsProductId(productId)) {
-            productDAO.findProductByID(productId);
+            Product zoekresultaat = productDAO.findProductByID(productId);
+            Menu.print(zoekresultaat.toString());
         } else {
             Menu.print("Er is geen product met het opgegeven productId gevonden.");
         }
