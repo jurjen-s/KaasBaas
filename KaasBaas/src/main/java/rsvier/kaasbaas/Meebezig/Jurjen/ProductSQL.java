@@ -44,6 +44,7 @@ public class ProductSQL implements ProductDAO {
         this.productenconnectie = connectie;
     }
     
+    @Override
     public Product findProductByID(int productId) {
         Product zoekresultaat = new Product();
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
@@ -70,6 +71,7 @@ public class ProductSQL implements ProductDAO {
         return zoekresultaat;
     } // einde findProductByID(int productId)
     
+    @Override
     public List findProductBySoort(String soort) {
         List<Product> zoekresultaat = new ArrayList<>();
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
@@ -100,6 +102,7 @@ public class ProductSQL implements ProductDAO {
         return zoekresultaat;
     } // einde findProductBySoort(String soort)
     
+    @Override
     public List findProductByPrijs(BigDecimal prijs) {
         List<Product> zoekresultaat = new ArrayList<>();
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
@@ -130,6 +133,7 @@ public class ProductSQL implements ProductDAO {
         return zoekresultaat;
     } // einde findProductByPrijs(BigDecimal Prijs)
     
+    @Override
     public List findProductByVoorraad(int voorraad) {
         List<Product> zoekresultaat = new ArrayList<>();
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
@@ -160,6 +164,7 @@ public class ProductSQL implements ProductDAO {
         return zoekresultaat;
     } // einde findProductByVoorraad(int voorraad)
     
+    @Override
     public boolean toevoegenProduct(Product product) {
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
                 "INSERT into producten (omschrijving, soort, prijs, voorraad) "+
@@ -176,7 +181,8 @@ public class ProductSQL implements ProductDAO {
         }
         return true;
     } // einde toevoegenProduct(Product product)
-
+    
+    @Override
     public boolean updateProductOmschrijving(int productId, String omschrijving) {
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
                 "UPDATE producten" +
@@ -191,7 +197,8 @@ public class ProductSQL implements ProductDAO {
         }
         return true;
     } // einde updateProductOmschrijving(int productId, String omschrijving)
-
+    
+    @Override
     public boolean updateProductSoort(int productId, String soort) {
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
                 "UPDATE producten" +
@@ -206,6 +213,8 @@ public class ProductSQL implements ProductDAO {
         }
         return true;
     } // einde updateProductSoort(int productId, String soort)
+    
+    @Override
     public boolean updateProductPrijs(int productId, BigDecimal prijs)  {
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
                 "UPDATE producten" +
@@ -220,6 +229,8 @@ public class ProductSQL implements ProductDAO {
         }
         return true;
     } // einde updateProductPrijs(int productId, BigDecimal prijs)
+    
+    @Override
     public boolean updateProductVoorraad(int productId, int voorraad) {
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
                 "UPDATE producten" +
@@ -234,7 +245,8 @@ public class ProductSQL implements ProductDAO {
         }
         return true;
     } // einde updateProductVoorraad(int productId, int voorraad)
-
+    
+    @Override
     public boolean verwijderenProduct(int productId) {
         try (PreparedStatement stmt = productenconnectie.prepareStatement(
                 "DELETE FROM producten" +

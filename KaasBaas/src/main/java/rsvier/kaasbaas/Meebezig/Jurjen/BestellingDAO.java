@@ -23,6 +23,7 @@ public interface BestellingDAO {
     List findBestellingByTotaalprijs(BigDecimal prijs); // returns List<Bestelling> met zoekresultaten
     // 2: Om bestellingen toe te voegen:
     boolean toevoegenBestelling(Bestelling opgegevenBestelling); //returns succes of mislukt
+    //@@ Is bovenstaande nog wel nodig? of zal ik het veranderen naar plaatsBestelling?
     // 3: Om bestellingen aan te passen:
     boolean updateBestellingKlantId(int bestellingId, int klantId); // returns succes of mislukt (+ laat vernieuwde bestelling zien?)
     boolean updateBestellingAdresId(int bestellingId, int adresId); // returns succes of mislukt
@@ -30,5 +31,7 @@ public interface BestellingDAO {
     boolean updateBestellingTotaalprijs(int bestellingId, BigDecimal totaalprijs); // returns succes of mislukt
     // 4: Om bestellingen te verwijderen:
     boolean verwijderenBestelling(int bestellingId); // returns succes of mislukt
+    // 5: Om een bestelling te bekijken:
+    List bekijkBestelling(int bestellingId); // returns een lijst met de inhoud van de bestelling
     
 }

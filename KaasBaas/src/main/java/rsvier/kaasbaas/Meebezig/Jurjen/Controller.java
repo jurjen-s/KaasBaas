@@ -8,6 +8,7 @@ package rsvier.kaasbaas.Meebezig.Jurjen;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -57,7 +58,10 @@ public class Controller {
             Menu.print("Er is geen product met het opgegeven productId gevonden.");
         }
     }
-    
+    public void findProductBySoort(String soort) {
+        List<Product> zoekresultaat = productDAO.findProductBySoort(soort);
+        Menu.print(zoekresultaat);
+    }
     
     
     // Error handling nodig voor

@@ -55,6 +55,8 @@ public class BestellingSQL implements BestellingDAO {
     * @param    bestellingId    Een integer die vergeleken moet worden met bestellingen_id in de bestellingen tabel
     * @return                   Een bestelling object dat overeenkomt met de bestelling gevonden in de database
     */    
+    
+    @Override
     public Bestelling findBestellingById(int bestellingId) {
         // @@Controleren of bestellingId bestaat in de db
         Bestelling zoekresultaat = new Bestelling();
@@ -86,7 +88,8 @@ public class BestellingSQL implements BestellingDAO {
         }
         return zoekresultaat;
     } // einde zoekBestelling(int bestellingId)
-
+    
+    @Override
     public List findBestellingByKlant(int klantId) {
         // @@Controleren of klantId bestaat in database
         List<Bestelling> zoekresultaat = new ArrayList<>();
@@ -117,7 +120,8 @@ public class BestellingSQL implements BestellingDAO {
         }
         return zoekresultaat;
     } // einde findBestellingByKlant(int klantId)
-
+.   
+    @Override
     public List findBestellingByAdresId(int adresId) {
         List<Bestelling> zoekresultaat = new ArrayList<>();
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
@@ -142,7 +146,8 @@ public class BestellingSQL implements BestellingDAO {
         }
         return zoekresultaat;
     } // einde zoekBestellingByAdres()
-
+    
+    @Override
     public List findBestellingByAantalArtikelen(int aantalArtikelen) {
         List<Bestelling> zoekresultaat = new ArrayList<>();
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
@@ -167,7 +172,8 @@ public class BestellingSQL implements BestellingDAO {
         }                        
         return zoekresultaat;
     } // einde findBestellingByAantalArtikelen()
-
+    
+    @Override
     public List findBestellingByTotaalprijs(BigDecimal totaalprijs) {
         List<Bestelling> zoekresultaat = new ArrayList<>();
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
@@ -193,6 +199,7 @@ public class BestellingSQL implements BestellingDAO {
         return zoekresultaat;
     } // einde findBestellingByTotaalprijs(BigDecimal totaalprijs)
 
+    @Override
     public boolean toevoegenBestelling(Bestelling opgegevenBestelling) {
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                 "INSERT INTO bestellingen (FK_bestellingen_klanten_id, FK_bestellingen_adres_id, aantal_artikelen, totaalprijs)" +
@@ -209,7 +216,8 @@ public class BestellingSQL implements BestellingDAO {
         }
         return true;
     } // einde toevoegenBestelling(Bestelling opgegevenBestelling)
-
+    
+    @Override
     public boolean updateBestellingKlantId(int bestellingId, int klantId) {
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                 "UPDATE bestellingen" +
@@ -225,7 +233,8 @@ public class BestellingSQL implements BestellingDAO {
         }
         return true;
     } // einde updateBestellingKlantId(int bestellingId, int klantId)
-
+    
+    @Override
     public boolean updateBestellingAdresId(int bestellingId, int adresId) {
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                 "UPDATE bestellingen" +
@@ -242,6 +251,7 @@ public class BestellingSQL implements BestellingDAO {
         return true;
     } // einde updateBestellingAdresId(int bestellingId, int adresId)
 
+    @Override
     public boolean updateBestellingAantalArtikelen(int bestellingId, int aantalArtikelen) {
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                 "UPDATE bestellingen" +
@@ -258,6 +268,7 @@ public class BestellingSQL implements BestellingDAO {
         return true;
     } // einde updateBestellingAantalArtikelen(int bestellingId, int aantalArtikelen)
 
+    @Override
     public boolean updateBestellingTotaalprijs(int bestellingId, BigDecimal totaalprijs) {
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                 "UPDATE bestellingen" +
@@ -274,19 +285,44 @@ public class BestellingSQL implements BestellingDAO {
         return true;
     } // einde updateBestellingTotaalprijs(int bestellingId, BigDecimal totaalprijs)
 
+    @Override
     public boolean verwijderenBestelling(int bestellingId) {
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
                     "DELETE FROM bestellingen" +
                     "WHERE bestellingen_id = ?")) {
-                stmt.setInt(1, bestellingId);
-                stmt.executeUpdate();
-                stmt.close();
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-                System.out.println("Er ging iets mis met het verwijderen van de bestelling.");
-                return false;
-            }        
+        stmt.setInt(1, bestellingId);
+        stmt.executeUpdate();
+        stmt.close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets mis met het verwijderen van de bestelling.");
+            return false;
+        }        
         return true;
     } // einde verwijderenBestelling(int bestellingId)
+    
+    @Override
+    public List bekijkBestelling(int bestellingId) {
+        try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
+                // bestelling heeft klant, adres, aantal artikelen en totaalprijs
+                // aantal artikelen is gelijk aan het aantal matchende bestelregels
+
+                // je wilt productSoort, hoeveelheid en totaalprijs per combinatie
+                // selecteer productsoort en prijs
+                "SELECT soort, prijs" +
+                "FROM producten"        
+                "WHERE producten_id = ?"
+                // selecteer hoeveelheid
+                "SELECT hoeveelheid" +
+                "FROM bestellingregels" +
+                "WHERE bestellingId = ?"        
+                // bereken prijs van product * hoeveelheid
+                
+                // bereken totaal aantal artikelen
+                // bereken totaalprijs van alle artikelen bij elkaar
+                
+                        
+                        
+    }
 
 } // einde BestellingSQL
