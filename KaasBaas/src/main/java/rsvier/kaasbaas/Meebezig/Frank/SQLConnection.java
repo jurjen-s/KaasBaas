@@ -4,13 +4,8 @@
  * and open the template in the editor.
  */
 package opdracht6test;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,9 +15,7 @@ import java.sql.SQLException;
  */
 public class SQLConnection {
     
-    public static Connection getSQLConnection() {    
-        
-        
+    public static Connection getSQLConnection() {       
     // nieuwe connectie aanmaken met try-with-resources: 
     // try (Connection x = database.access.ConnectionManager.SQLConnection()) 
     // waarbij x aangeeft om welke connectie het gaat
@@ -35,17 +28,18 @@ public class SQLConnection {
             try {                
                 Class.forName("com.mysql.jdbc.Driver");
             } catch (ClassNotFoundException e) {
-  System.out.println("JDBC Driver niet gevonden.");
-  e.printStackTrace();
+		System.out.println("MySQL JDBC Driver niet gevonden.");
+		e.printStackTrace();
             }
+            System.out.println("MySQL JDBC Driver geladen.");
             // Try to establish connection
             try {
                 sqlconnectie = DriverManager.getConnection(host, userName, userPass);
             } catch (SQLException ex) {
-                System.out.println("Geen verbinding met de SQL database verkregen.");
+                System.out.println("Geen verbinding met de MySQL database verkregen.");
                 ex.getMessage();
             }
+            System.out.println("Verbonden met de MySQL database.");
         return sqlconnectie;
         }
 }
-

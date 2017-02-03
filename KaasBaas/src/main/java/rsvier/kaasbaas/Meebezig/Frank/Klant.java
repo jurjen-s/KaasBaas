@@ -4,55 +4,60 @@
  * and open the template in the editor.
  */
 package opdracht6test;
-
-import java.util.*;
-//Dit zit in de basis POJO
  
 
    
 
 
-public class Klant {
+public class Klant  {
 
     
     //PRIVATE
     
-private int idKlant, telefoonnummer, Bezorghuisnummer, Factuurhuisnummer, idMedewerker;
-private String Land, voornaam,tussenvoegsel, achternaam, BezorgPostcode,FactuurPostcode,BezorgHuisnummerToevoeging, FactuurHuisnummerToevoeging;
+private int klanten_id, telefoonnummer,FK_accounts_id,FK_adressen_klant,FK_adressen_type, heeft_tussenvoegsel;
+        //Bezorghuisnummer, Factuurhuisnummer, idMedewerker;
+private String Land, voornaam,tussenvoegsel, achternaam;
+        //BezorgPostcode,FactuurPostcode,BezorgHuisnummerToevoeging, FactuurHuisnummerToevoeging;
 
 
 
-public void setALL(int idklant, String vnaam, String tv, String anaam, int tel, int BHnr, String BHnrT, String BPc, String FBPc, int FHnr, String FHnrT, String L){
-this.idKlant = idklant;
+public void setALL( String vnaam, int heeft, String tv, String anaam, int tel,int FKAI, int FKAK, int FKAT){
+        //int BHnr, String BHnrT, String BPc, String FBPc, int FHnr, String FHnrT, String L){
+
 this.voornaam = vnaam;
+this.heeft_tussenvoegsel= heeft;
 this.tussenvoegsel = tv;
 this.achternaam = anaam;
 this.telefoonnummer = tel;
-this.Bezorghuisnummer = BHnr;
-this.BezorgHuisnummerToevoeging = BHnrT;
-this.BezorgPostcode = BPc;
-this.FactuurPostcode = FBPc;
-this.Factuurhuisnummer = FHnr;
-this.FactuurHuisnummerToevoeging = FHnrT;
-this.Land = L;
-System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnummer + Bezorghuisnummer + BezorgHuisnummerToevoeging + BezorgPostcode + FactuurPostcode + Factuurhuisnummer +FactuurHuisnummerToevoeging + Land);
+this.FK_accounts_id = FKAI;
+this.FK_adressen_klant = FKAK;
+this.FK_adressen_type = FKAT;
+//this.Bezorghuisnummer = BHnr;
+//this.BezorgHuisnummerToevoeging = BHnrT;
+//this.BezorgPostcode = BPc;
+//this.FactuurPostcode = FBPc;
+//this.Factuurhuisnummer = FHnr;
+//this.FactuurHuisnummerToevoeging = FHnrT;
+//this.Land = L;
+System.out.println(klanten_id + voornaam + tussenvoegsel + achternaam + telefoonnummer + FK_accounts_id + " " + FK_adressen_klant + " "+ FK_adressen_type);
+        //Bezorghuisnummer + BezorgHuisnummerToevoeging + BezorgPostcode + FactuurPostcode + Factuurhuisnummer +FactuurHuisnummerToevoeging + Land);
 }
 
 
 public void getAll (){
 
-System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnummer + Bezorghuisnummer + BezorgHuisnummerToevoeging + BezorgPostcode + FactuurPostcode + Factuurhuisnummer +FactuurHuisnummerToevoeging + Land);
+System.out.println(klanten_id + voornaam + tussenvoegsel + achternaam + telefoonnummer + FK_accounts_id + " " + FK_adressen_klant + " "+ FK_adressen_type);
 
 }
 
 
 
-    public int getKlantID() {
-        return idKlant;
+    public int getKlantenID() {
+        return klanten_id;
     }
 
-    public void setKlantID(int klantID) {
-        this.idKlant = klantID;
+    public void setKlantenID(int klantID) {
+        this.klanten_id = klantID;
     }
 
     public String getVoornaam() {
@@ -79,6 +84,7 @@ System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnum
         this.tussenvoegsel = tussenvoegsel;
     }
 
+   /**
     public String getBezorgPostcode() {
         return BezorgPostcode;
     }
@@ -111,6 +117,8 @@ System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnum
         this.FactuurHuisnummerToevoeging = FHtoevoeging;
     }
 
+*/
+    
     public int getTelefoonnummer() {
         return telefoonnummer;
     }
@@ -119,14 +127,31 @@ System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnum
         this.telefoonnummer = telefoonnummer;
     }
     
-    public int getBezorghuisnummer() {
-        return Bezorghuisnummer;
+    public int getFKaccountsID() {
+        return FK_accounts_id;
     }
 
-    public void setBezorghuisnummer(int bezorghuisnummer) {
-        this.Bezorghuisnummer = bezorghuisnummer;
+    public void setFKaccountsID(int FKAI) {
+        this.FK_accounts_id = FKAI;
     }
     
+     public int getFKadressenKlant() {
+        return FK_adressen_klant;
+    }
+
+    public void setFKadressenKlant(int FKAK) {
+        this.FK_adressen_klant = FKAK;
+    }
+    
+    public int getFKadressenType() {
+        return FK_adressen_type;
+    }
+
+    public void setFKadressenType(int FKAT) {
+        this.FK_adressen_type = FKAT;
+    }
+    
+    /**
     public int getFactuurhuisnummer() {
         return Factuurhuisnummer;
     }
@@ -151,7 +176,7 @@ System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnum
         this.idMedewerker = medewerkerint;
     }
     
-    
+    */
     
     
     
@@ -162,7 +187,8 @@ System.out.println(idKlant + voornaam + tussenvoegsel + achternaam + telefoonnum
     
     @Override
     public String toString() {
-        return "Klant{" + "klantID=" + idKlant + ", voornaam=" + voornaam + 
+        
+        return "Klant{" + "klantID=" + klanten_id + ", voornaam=" + voornaam + 
                 ", achternaam=" + achternaam + ", tussenvoegsel=" + tussenvoegsel + ", telefoonnummer=" + telefoonnummer + '}';
     }
     
