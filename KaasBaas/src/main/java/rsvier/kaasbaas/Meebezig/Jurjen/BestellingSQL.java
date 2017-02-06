@@ -11,7 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -120,7 +123,7 @@ public class BestellingSQL implements BestellingDAO {
         }
         return zoekresultaat;
     } // einde findBestellingByKlant(int klantId)
-.   
+   
     @Override
     public List findBestellingByAdresId(int adresId) {
         List<Bestelling> zoekresultaat = new ArrayList<>();
@@ -302,27 +305,75 @@ public class BestellingSQL implements BestellingDAO {
     } // einde verwijderenBestelling(int bestellingId)
     
     @Override
-    public List bekijkBestelling(int bestellingId) {
+    public void bekijkBestelling(int bestellingId) {
+        List<Product> zoekresultaat = new ArrayList<>();
+        Map<Product, Integer> test = new HashMap<Product, Integer>();
         try (PreparedStatement stmt = bestellingenconnectie.prepareStatement(
-                // bestelling heeft klant, adres, aantal artikelen en totaalprijs
+                // bestelling heeft klant, adres, product+hoeveelheid+prijs, totaal aantal artikelen en totaalprijs
                 // aantal artikelen is gelijk aan het aantal matchende bestelregels
-
                 // je wilt productSoort, hoeveelheid en totaalprijs per combinatie
-                // selecteer productsoort en prijs
-                "SELECT soort, prijs" +
-                "FROM producten"        
-                "WHERE producten_id = ?"
-                // selecteer hoeveelheid
-                "SELECT hoeveelheid" +
-                "FROM bestellingregels" +
-                "WHERE bestellingId = ?"        
-                // bereken prijs van product * hoeveelheid
                 
-                // bereken totaal aantal artikelen
-                // bereken totaalprijs van alle artikelen bij elkaar
                 
+                "SELECT producten.soort, producten.prijs, bestellingregels.hoeveelheid" +
+                "FROM producten, bestellingregels" +
+                "WHERE producten_id = FK_bestellingregels_producten_id")) {
+                ResultSet rs = stmt.executeQuery();
+                int aantalArtikelen = 0;
+                BigDecimal totaalprijs = new BigDecimal(0);
+                List<String> aantal = new ArrayList<>();
+                while (rs.next()) {
+                    aantalArtikelen++;
+                    totaalprijs = totaalprijs.add(rs.getBigDecimal("prijs").multiply(new BigDecimal(rs.getInt("hoeveelheid"))));
+                    Product besteldProduct = new Product();
+                    besteldProduct.setSoort(rs.getString("soort"));
+                    besteldProduct.setPrijs(rs.getBigDecimal("prijs"));
+                    zoekresultaat.add(besteldProduct);
+                    String hoeveelheid = "" + rs.getInt("hoeveelheid");
+                    aantal.add("" + rs.getInt("hoeveelheid"));
+                    // Testen of het lukt met 1 return, een hashmap
+                        for (int i = 0; i < zoekresultaat.size(); i++) {
+                            test.put(besteldProduct, rs.getInt("hoeveelheid"));
+                        }
+                }
+                System.out.println("Bestelling " + bestellingId + " bestaat uit " + aantalArtikelen + " artikelen met een totaalprijs van " + totaalprijs + ".");
+                System.out.println("De bestelling bestaat uit de volgende producten: ");
+                for (int i = 0; i < zoekresultaat.size() - 1; i++) {
+                    System.out.println("Product: " + zoekresultaat.get(i) + "/t/t" + "Aantal: " + aantal.get(i));
+                }
+                // Testen of het lukt met 1 return, een hashmap
+                // return test; (om te printen in view)
+                // hier printen (om te testen)
+                System.out.println(Arrays.asList(test));
+                
+                
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Er ging iets mis bij het bekijken van de bestelling.");
+            
+        }  
+                
+                
+                
+                /*
+                // JOIN poging
+                SELECT
+                  producten.soort,
+                  producten.prijs,
+                  bestellingregels.hoeveelheid,
+                  bestellingen.bestellingen_id,
+                  bestellingen.FK_bestellingen_klanten_id                  
+                FROM bestellingen
+                  INNER JOIN bestellingregels
+                    ON bestellingen_id = FK_bestellingregels_bestellingen_id
+                  INNER JOIN producten
+                    ON producten_id = FK_bestellingregels_producten_id
+                */
+                
+                
+                  
                         
                         
-    }
+    
+    } // einde bekijkBestelling(int bestellingId)
 
 } // einde BestellingSQL

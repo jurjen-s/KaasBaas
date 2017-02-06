@@ -32,6 +32,6 @@ public interface BestellingDAO {
     // 4: Om bestellingen te verwijderen:
     boolean verwijderenBestelling(int bestellingId); // returns succes of mislukt
     // 5: Om een bestelling te bekijken:
-    List bekijkBestelling(int bestellingId); // returns een lijst met de inhoud van de bestelling
+    void bekijkBestelling(int bestellingId); // print een lijst met de inhoud van de bestelling
     
 }
