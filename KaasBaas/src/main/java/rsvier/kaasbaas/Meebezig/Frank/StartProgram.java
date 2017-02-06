@@ -17,19 +17,25 @@ public class StartProgram {
         
         System.out.println("Eerst inloggen");
         
-        //inlog functie;
+        //Inlogmenu.inlogMenu();
         
-        
+        if(Inlogmenu.inlogMenu() == 1){
         System.out.println("Start hoofd menu");
         
        menu.hoofdmenu();
-        
+        }
+       else{ System.out.println("u stopte met inloggen");
+       
+       
+       
+       
         System.out.println("Eind programma");
-        
-        
-        
-    
+      
     
     }
+    
+        
+}
+    
     
 }
